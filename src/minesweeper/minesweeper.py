@@ -11,12 +11,12 @@ class Minesweeper:
         self.start_pos = (start_col, start_row)
 
     def place_mines(self):
-        """Makes a consistent miensweeper field that you can't lose in on the first try. 1 of 6 spots in the field are mines.
+        """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """
         mines_to_place = round(self.n_spots/6)
         mine_spots = sample(self.field, mines_to_place)
 
-        # ensures that you ca't lose on the first click
+        # ensures that you can't lose on the first click
         while self.start_pos in mine_spots:
             mine_spots = sample(self.field, mines_to_place)
 

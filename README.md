@@ -18,8 +18,8 @@ As the Database that holds the field status for the game the tortoise-orm Databa
 
 ### For solving a mineswpeer field
 
-[lvngd blog 2](https://lvngd.com/blog/solving-minesweeper-python-constraint-satisfaction-problem/)
-[Harvard cs50](https://cs50.harvard.edu/ai/2020/projects/1/minesweeper/)
+- [lvngd blog 2](https://lvngd.com/blog/solving-minesweeper-python-constraint-satisfaction-problem/)
+- [Harvard cs50](https://cs50.harvard.edu/ai/2020/projects/1/minesweeper/)
 
 ### For makeing a non-guessing minesweeper field
 

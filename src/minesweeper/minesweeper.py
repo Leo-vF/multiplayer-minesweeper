@@ -9,7 +9,7 @@ class Minesweeper:
         self.n_cols = n_cols
         self.n_rows = n_rows
         self.n_spots = n_cols * n_rows
-        self.start_pos = (start_col, start_row)
+        self.start_pos = self.field[start_col][start_row]
 
     def __str__(self) -> str:
         _str = "["
@@ -47,6 +47,20 @@ class Minesweeper:
 
                     self.field[n[0]][n[1]].n_mines += 1
                     self.field[n[0]][n[1]].orig_n_mines += 1
+        print(self.start_pos, self.start_pos.col, self.start_pos.row)
+        print(self)
+        if self.start_pos.orig_n_mines != 0 or self.start_pos.mine == True:
+            self.reset_field()
+            self.place_mines()
+
+    def reset_field(self):
+        """Resets every Spot's number of mines and whether or not it is a mine
+        """
+        for row in self.field:
+            for spot in row:
+                spot.n_mines = 0
+                spot.orig_n_mines = 0
+                spot.mine = None
 
     def test_solver(self):
         """Used to test wether or not a board is solvable purely by logic.
@@ -66,23 +80,33 @@ class Spot:
         self.constraints: list[tuple[int, int]] = None
 
     def __str__(self):
-        str = f"({self.col}, {self.row})"
+        str = f"({self.orig_n_mines}, {self.mine})"  # {self.col}, {self.row},
         return str
 
     def setMine(self):
         self.mine = True
 
     def setN_mines(self, n_mines: int):
-        self.n_mines = n_mines
-        self.orig_n_Mines = n_mines
+        """Sets the Spot attributes n_mines and orig_n_mines to the parameter n_mines.
 
-    def get_col_row(self):
+        Args:
+            n_mines (int): The number of mines in neighobring spots
+        """
+        self.n_mines = n_mines
+        self.orig_n_mines = n_mines
+
+    def get_col_row(self) -> tuple:
+        """Returns column and row of the spot
+
+        Returns:
+            tuple: Tuple with column and row
+        """
         return (self.col, self.row)
 
 
 if __name__ == "__main__":
     ms = Minesweeper(1, 1, 5, 2)
     ms.place_mines()
-    for row in ms.field:
-        for spot in row:
-            print(spot.mine)
+    # for row in ms.field:
+    #     for spot in row:
+    #         print(spot.mine)

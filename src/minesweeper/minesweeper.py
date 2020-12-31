@@ -3,7 +3,7 @@ from numpy import ravel
 
 
 class Minesweeper:
-    def __init__(self, start_col: int, start_row: int, n_rows: int = 20, n_cols: int = 30):
+    def __init__(self, start_col: int, start_row: int, n_cols: int = 30, n_rows: int = 20):
         self.field = [[Spot(col, row) for row in range(n_cols)]
                       for col in range(n_rows)]
         self.n_cols = n_cols
@@ -105,7 +105,7 @@ class Spot:
 
 
 if __name__ == "__main__":
-    ms = Minesweeper(1, 1, 5, 2)
+    ms = Minesweeper(1, 1, 2, 5)
     ms.place_mines()
     # for row in ms.field:
     #     for spot in row:

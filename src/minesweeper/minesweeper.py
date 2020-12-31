@@ -1,15 +1,16 @@
 from numpy.random import choice
 from numpy import ravel
 
+from .spot import Spot
+
 
 class Minesweeper:
-    def __init__(self, start_col: int, start_row: int, n_cols: int = 30, n_rows: int = 20):
+    def __init__(self, n_cols: int, n_rows: int):
         self.field = [[Spot(col, row) for row in range(n_cols)]
                       for col in range(n_rows)]
         self.n_cols = n_cols
         self.n_rows = n_rows
         self.n_spots = n_cols * n_rows
-        self.start_pos = self.field[start_col][start_row]
 
     def __str__(self) -> str:
         _str = "["
@@ -21,9 +22,12 @@ class Minesweeper:
         _str = _str[:-3] + "]"
         return _str
 
-    def place_mines(self):
+    def place_mines(self, start_col: int, start_row: int):
         """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """
+
+        self.start_pos = self.field[start_col][start_row]
+
         mines_to_place = round(self.n_spots/6)
         mine_spots = choice(ravel(self.field), mines_to_place, replace=False)
 
@@ -47,8 +51,9 @@ class Minesweeper:
 
                     self.field[n[0]][n[1]].n_mines += 1
                     self.field[n[0]][n[1]].orig_n_mines += 1
-        print(self.start_pos, self.start_pos.col, self.start_pos.row)
-        print(self)
+
+        # ensures that the field is solvable after the first click
+        # meaning that the first field has to have 0 neighboring mines
         if self.start_pos.orig_n_mines != 0 or self.start_pos.mine == True:
             self.reset_field()
             self.place_mines()
@@ -70,42 +75,8 @@ class Minesweeper:
         spots_to_probe = []
 
 
-class Spot:
-    def __init__(self, col: int, row: int):
-        self.row: int = row
-        self.col: int = col
-        self.n_mines: int = 0
-        self.orig_n_mines: int = 0
-        self.mine: bool = None
-        self.constraints: list[tuple[int, int]] = None
-
-    def __str__(self):
-        str = f"({self.orig_n_mines}, {self.mine})"  # {self.col}, {self.row},
-        return str
-
-    def setMine(self):
-        self.mine = True
-
-    def setN_mines(self, n_mines: int):
-        """Sets the Spot attributes n_mines and orig_n_mines to the parameter n_mines.
-
-        Args:
-            n_mines (int): The number of mines in neighobring spots
-        """
-        self.n_mines = n_mines
-        self.orig_n_mines = n_mines
-
-    def get_col_row(self) -> tuple:
-        """Returns column and row of the spot
-
-        Returns:
-            tuple: Tuple with column and row
-        """
-        return (self.col, self.row)
-
-
 if __name__ == "__main__":
-    ms = Minesweeper(1, 1, 2, 5)
+    ms = Minesweeper(2, 5, 1, 1)
     ms.place_mines()
     # for row in ms.field:
     #     for spot in row:

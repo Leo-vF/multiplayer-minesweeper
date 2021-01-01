@@ -20,4 +20,3 @@ register_tortoise(app,
                   modules={"models": ["src.ms_models"]},
                   generate_schemas=True,
                   add_exception_handlers=True)
-print(db_minesweeper.__name__)

@@ -22,6 +22,7 @@ class Minesweeper:
         _str = _str[:-3] + "]"
         return _str
 
+
     def place_mines(self, start_col: int, start_row: int):
         """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """

@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from tortoise.contrib.fastapi import register_tortoise
 
 from .routers import field, general
-from .models.db_minesweeper import db_minesweeper
 
 app = FastAPI()
 app.include_router(general.router)

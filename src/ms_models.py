@@ -15,9 +15,9 @@ class db_minesweeper(Model):
     spots = fields.ForeignKeyField(model_name="models.db_Spot")
 
     #
-    # code = fields.IntField(unique=True)  # the code to enter the same game
-    # field = fields.jsonField()  # the entire field that is saved after correct generation
-    # open_field = fields.jsonField()  # all the opened and marked fields
+    # code = fields.IntField(unique=True)                           # the code to enter the same game
+    # field = fields.jsonField()                                    # the entire field that is saved after correct generation
+    # open_field = fields.jsonField()                               # all the opened and marked fields
     #
 
 

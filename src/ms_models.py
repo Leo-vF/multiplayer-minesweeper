@@ -1,3 +1,4 @@
+from tortoise.fields.base import CASCADE
 from tortoise.models import Model
 from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
@@ -15,7 +16,7 @@ class db_minesweeper(Model):
     """
     id = fields.UUIDField(pk=True)      # the code to enter the same game
     spots = fields.ForeignKeyField(
-        model_name="models.db_spot")    # the entire field of spots
+        model_name="models.db_spot", on_delete=CASCADE)    # the entire field of spots
     code = fields.SmallIntField(unique=True)
     n_cols = fields.SmallIntField()
     n_rows = fields.SmallIntField()

@@ -15,7 +15,6 @@ def main_page(request: Request):
 
 register_tortoise(app,
                   db_url="sqlite://database/minesweeper.sql",
-                  # "src.models.db_minesweeper", "src.models.db_spot"
                   modules={"models": ["src.ms_models"]},
                   generate_schemas=True,
                   add_exception_handlers=True)

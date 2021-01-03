@@ -5,12 +5,13 @@ from .spot import Spot
 
 
 class Minesweeper:
-    def __init__(self, n_cols: int, n_rows: int):
+    def __init__(self, n_cols: int, n_rows: int, start_col: int, start_row: int):
         self.field = [[Spot(col, row) for row in range(n_cols)]
                       for col in range(n_rows)]
         self.n_cols = n_cols
         self.n_rows = n_rows
         self.n_spots = n_cols * n_rows
+        self.start_pos = self.field[start_col][start_row]
 
     def __str__(self) -> str:
         _str = "["
@@ -22,14 +23,13 @@ class Minesweeper:
         _str = _str[:-3] + "]"
         return _str
 
-
-    def place_mines(self, start_col: int, start_row: int):
+    def place_mines(self, mines_to_place: int = None):
         """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """
+        if mines_to_place in [None, 0, self.n_spots]:
+            mines_to_place = round(self.n_spots/6)
+        self.n_mines = mines_to_place
 
-        self.start_pos = self.field[start_col][start_row]
-
-        mines_to_place = round(self.n_spots/6)
         mine_spots = choice(ravel(self.field), mines_to_place, replace=False)
 
         # ensures that you can't lose on the first click
@@ -66,7 +66,7 @@ class Minesweeper:
             for spot in row:
                 spot.n_mines = 0
                 spot.orig_n_mines = 0
-                spot.mine = None
+                spot.mine = False
 
     def test_solver(self):
         """Used to test wether or not a board is solvable purely by logic.
@@ -75,10 +75,17 @@ class Minesweeper:
         moves = []
         spots_to_probe = []
 
+    def get_spots(self):
+        spots = []
+        for row in self.field:
+            for spot in row:
+                spots.append(spot.get_col_row())
+        return spots
+
 
 if __name__ == "__main__":
     ms = Minesweeper(2, 5, 1, 1)
     ms.place_mines()
-    # for row in ms.field:
-    #     for spot in row:
-    #         print(spot.mine)
+    for row in ms.field:
+        for spot in row:
+            print(spot.mine)

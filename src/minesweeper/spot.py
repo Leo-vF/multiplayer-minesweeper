@@ -4,7 +4,7 @@ class Spot:
         self.col: int = col
         self.n_mines: int = 0
         self.orig_n_mines: int = 0
-        self.mine: bool = None
+        self.mine: bool = False
         self.constraints: list[tuple[int, int]] = None
 
     def __str__(self):
@@ -30,3 +30,16 @@ class Spot:
             tuple: Tuple with column and row
         """
         return (self.col, self.row)
+
+    def get_db_attribs(self):
+        """Returns the attributes needed for the database as a dictionary with the right keys.
+
+        Returns:
+            Dict: The database fields as keys and the corresponding values.
+        """
+        return {
+            "col": self.col,
+            "row": self.row,
+            "n_mines": self.orig_n_mines,
+            "mine": self.mine
+        }

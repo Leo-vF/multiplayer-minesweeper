@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="", tags=["General options"])
+router = APIRouter(prefix="", tags=["UI Endpoints"])
 
 
 @router.get("/game")

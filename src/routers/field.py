@@ -67,26 +67,24 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
         if spot["n_mines"] != 0:
             await update_opened(code=code, col=col, row=row)
 
-            return spot
+            OPENED.append(spot)
 
-        neighbors = [
-            (col-1, row-1), (col, row-1), (col+1, row-1),
-            (col-1, row),                 (col+1, row),
-            (col-1, row+1), (col, row+1), (col+1, row+1)
-        ]
+        else:
+            neighbors = [
+                (col-1, row-1), (col, row-1), (col+1, row-1),
+                (col-1, row),                 (col+1, row),
+                (col-1, row+1), (col, row+1), (col+1, row+1)
+            ]
 
-        if spot["opened"] == False:
-            await update_opened(code, col, row)
-            opened = [spot]
-            for nb in neighbors:
-                if 0 <= nb[0] < n_rows and 0 <= nb[1] < n_cols:
-                    nb = await spot_pydantic.from_queryset_single(db_spot.get(code=code, col=nb[0], row=nb[1]))
-                    nb = nb.dict()
-                    if nb["opened"] == False:
-                        rec = await open_zeros(nb, code, size)
-                        if rec:
-                            opened.append(rec)
-            return opened
+            if spot["opened"] == False:
+                await update_opened(code, col, row)
+                OPENED.append(spot)
+                for nb in neighbors:
+                    if 0 <= nb[0] < n_rows and 0 <= nb[1] < n_cols:
+                        nb = await spot_pydantic.from_queryset_single(db_spot.get(code=code, col=nb[0], row=nb[1]))
+                        nb = nb.dict()
+                        if nb["opened"] == False:
+                            await open_zeros(nb, code, size)
 
     spot = await spot_pydantic.from_queryset_single(
         db_spot.get(code=code, col=col, row=row))
@@ -102,5 +100,5 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
 
     # TODO make sure to open only if it is a double click or the field is not yet opened
     if not double_click:
-        opened = await open_zeros(spot_dict, code, size)
-        return opened
+        await open_zeros(spot_dict, code, size)
+        return OPENED

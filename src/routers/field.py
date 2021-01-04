@@ -23,7 +23,9 @@ async def new_field(msIn: minesweeperIn_pydantic):
     ms.place_mines(msIn_dict["n_mines"])
     msIn_dict.update({"n_mines": ms.n_mines})
     db_ms_obj = await db_minesweeper.create(**msIn_dict)
-    default_values = {"opened": False, "code": msIn_dict["code"]}
+    # TODO see if opened and flagged values are needed, probably not bc. of default values in the db model
+    default_values = {"opened": False,
+                      "code": msIn_dict["code"], "flagged": False}
     for spot in ravel(ms.field):
         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
     return msIn_dict
@@ -101,3 +103,17 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
     if not double_click:
         await open_zeros(spot_dict, code, size)
         return OPENED
+
+
+@router.put("/set-flag/{code}-{col}-{row}")
+async def setFlag(code: int, col: int, row: int):
+    db_spot_obj = await db_spot.filter(code=code, col=col, row=row)
+    spot = await spot_pydantic.from_queryset_single(db_spot_obj)
+    spot = spot.dict()
+    if spot["flagged"] == False:
+        await db_spot_obj.update(flagged=True)
+        # TODO define better return value for frontend
+        return {"status": "Flagged Successfully"}
+    else:
+        # TODO define better return value for frontend
+        return {"status": "Spot is already flagged"}

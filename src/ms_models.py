@@ -35,17 +35,19 @@ class db_spot(Model):
      - code [SmallIntField]: The Code of the minesweeper board a spot belongs to.
      - col [SmallIntField]: Holds the column of the spot in its minesweeper board 16bit signed integer.
      - row [SmallIntField]: Holds the row of the spot in its minesweeper board. 16bit signed integer.
-     - opened [BooleanField]: True if the players already opened the spot or not.
+     - opened [BooleanField]: True if the players already opened the spot or not, default:False
      - mine [BooleanField]: True if the spot contains a mine false if it does not.
      - n_mines [SmallIntField]: Contains the number of neighboring mines. 16bit signed integer.
+     - flagged [BooleanField]: Whether or not the field is flagged, default: False
     """
     id = fields.UUIDField(pk=True)
     code = fields.SmallIntField()
     col = fields.SmallIntField()
     row = fields.SmallIntField()
-    opened = fields.BooleanField()
+    opened = fields.BooleanField(default=False)
     mine = fields.BooleanField()
     n_mines = fields.SmallIntField()
+    flagged = fields.BooleanField(default=False)
 
 
 minesweeper_pydantic = pydantic_model_creator(

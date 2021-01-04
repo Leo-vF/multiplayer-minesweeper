@@ -18,7 +18,7 @@ class Spot:
         """Sets the Spot attributes n_mines and orig_n_mines to the parameter n_mines.
 
         Args:
-            n_mines (int): The number of mines in neighobring spots
+            n_mines (int): The number of mines in neighboring spots
         """
         self.n_mines = n_mines
         self.orig_n_mines = n_mines

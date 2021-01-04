@@ -63,7 +63,6 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
         col, row = spot["col"], spot["row"]
         n_cols, n_rows = size
 
-        # HACK print(f"öffne-{col}-{row}")
         if spot["n_mines"] != 0:
             await update_opened(code=code, col=col, row=row)
 

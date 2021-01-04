@@ -1,5 +1,6 @@
 from numpy.random import choice
 from numpy import ravel
+from numpy import array
 
 from .spot import Spot
 
@@ -15,7 +16,7 @@ class Minesweeper:
 
     def __str__(self) -> str:
         _str = "["
-        for row in self.field:
+        for row in array(self.field).T:
             _str += ("[")
             for spot in row:
                 _str += str(spot) + ", "
@@ -23,7 +24,7 @@ class Minesweeper:
         _str = _str[:-3] + "]"
         return _str
 
-    def place_mines(self, mines_to_place: int = None):
+    def place_mines(self, mines_to_place=None):
         """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """
         if mines_to_place in [None, 0, self.n_spots]:
@@ -57,7 +58,7 @@ class Minesweeper:
         # meaning that the first field has to have 0 neighboring mines
         if self.start_pos.orig_n_mines != 0 or self.start_pos.mine == True:
             self.reset_field()
-            self.place_mines()
+            self.place_mines(mines_to_place)
 
     def reset_field(self):
         """Resets every Spot's number of mines and whether or not it is a mine

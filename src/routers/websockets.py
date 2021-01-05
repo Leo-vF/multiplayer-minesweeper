@@ -3,7 +3,7 @@ from fastapi import APIRouter, WebSocket
 router = APIRouter(prefix="/ws", tags=["Websocket"])
 
 
-@router.websocket()
+@router.websocket("/")
 async def websocket_test(websocket: WebSocket):
     await websocket.accept()
     while True:

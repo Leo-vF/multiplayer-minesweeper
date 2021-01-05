@@ -18,6 +18,6 @@ def main_page(request: Request):
 
 register_tortoise(app,
                   db_url="sqlite://database/minesweeper.sql",
-                  modules={"models": ["src.ms_models"]},
+                  modules={"models": ["src.models.db"]},
                   generate_schemas=True,
                   add_exception_handlers=True)

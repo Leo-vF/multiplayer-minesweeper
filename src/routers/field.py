@@ -3,7 +3,7 @@ from numpy import ravel
 from typing import List
 
 from ..minesweeper import Minesweeper
-from ..ms_models import db_minesweeper, db_spot, minesweeperIn_pydantic, spot_pydantic, minesweeper_pydantic
+from ..models.db import db_minesweeper, db_spot, minesweeperIn_pydantic, spot_pydantic, minesweeper_pydantic
 
 router = APIRouter(prefix="/field",
                    tags=["Minesweeper field Operations"])

@@ -43,9 +43,13 @@ async def get():
     return HTMLResponse(html)
 
 
-@router.websocket("/ws/")
+@router.websocket("/join/")
 async def websocket_test(websocket: WebSocket):
     await websocket.accept()
     while True:
-        data = await websocket.receive_text()
+        data = await websocket.receive_json()
+        if data.size !== null
+        ----> Create new game with data.size and send back the grid values
+        if data.code !== null 
+        ----> Join existing game and send back the grid values
         await websocket.send_text(f"Message text was: {data}")

@@ -68,7 +68,7 @@ async def ws_create(websocket: WebSocket):
             ms = ms.dict()
             websocket.send_json(ms["id"])
         except Exception as e:
-            await websocket.send_json(e)
+            await websocket.send_text(str(e))
 
 
 @router.websocket("/join")
@@ -78,4 +78,4 @@ async def ws_join(websocket: WebSocket):
     try:
         db_minesweeper.filter(code=data["code"])
     except Exception as e:
-        await websocket.send_json(e)
+        await websocket.send_text(str(e))

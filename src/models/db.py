@@ -21,8 +21,6 @@ class db_minesweeper(Model):
     n_cols = fields.SmallIntField()
     n_rows = fields.SmallIntField()
     solvable = fields.BooleanField()
-    start_col = fields.SmallIntField()
-    start_row = fields.SmallIntField()
     n_mines = fields.SmallIntField()
 
 

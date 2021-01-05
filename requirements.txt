@@ -1,3 +1,4 @@
 fastapi
 tortoise-orm
 numpy
+uvicorn

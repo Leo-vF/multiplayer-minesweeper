@@ -100,6 +100,11 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
     # TODO make sure to open only if it is a double click or the field is not yet opened
     if not double_click:
         await open_zeros(spot_dict, code, size)
+        spots = await spot_pydantic.from_queryset(
+            db_spot.filter(code=code, mine=False, opened=False))
+        spots = [spot.dict() for spot in spots]
+        if len(spots) == 0:
+            return {"status": "You Won!"}
         return OPENED
 
 

@@ -1,8 +1,3 @@
-database/minesweeper.sql
-database/minesweeper.sql-shm
-database/minesweeper.sql-wal
-
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

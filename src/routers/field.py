@@ -100,6 +100,11 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
     # TODO make sure to open only if it is a double click or the field is not yet opened
     if not double_click:
         await open_zeros(spot_dict, code, size)
+        spots = await spot_pydantic.from_queryset(
+            db_spot.filter(code=code, mine=False, opened=False))
+        spots = [spot.dict() for spot in spots]
+        if len(spots) == 0:
+            return {"status": "You Won!"}
         return OPENED
 
 
@@ -116,8 +121,12 @@ async def set_Flag(code: int, col: int, row: int):
         # TODO define better return value for frontend
         return {"status": "Spot is already flagged"}
     else:
+        spots = await spot_pydantic.from_queryset(db_spot.filter(code=code, mine=True, flagged=False))
+        spots = [spot.dict() for spot in spots]
         await db_spot.filter(code=code, col=col, row=row).update(flagged=True)
-        spots = await spot_pydantic.from_queryset(db_spot.filter(mine=True))
-        print(spots)
+        if len(spots) == 1:
+            if spots[0]["col"] == spot["col"] and spots[0]["row"] == spot["row"]:
+                # TODO define better return value for frontend
+                return {"status": "You won!"}
         # TODO define better return value for frontend
         return {"status": "Flagged Successfully"}

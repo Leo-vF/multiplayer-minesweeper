@@ -106,14 +106,18 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
 
 
 @router.put("/set-flag/{code}-{col}-{row}")
-async def setFlag(code: int, col: int, row: int):
+async def set_Flag(code: int, col: int, row: int):
     db_spot_obj = await db_spot.filter(code=code, col=col, row=row)
     spot = await spot_pydantic.from_queryset_single(db_spot_obj)
     spot = spot.dict()
-    if spot["flagged"] == False:
+
+    if spot["opened"] == True:
+        # TODO define better return value for frontend
+        return {"status": "Spot is already opened"}
+    elif spot["flagged"] == True:
+        # TODO define better return value for frontend
+        return {"status": "Spot is already flagged"}
+    else:
         await db_spot_obj.update(flagged=True)
         # TODO define better return value for frontend
         return {"status": "Flagged Successfully"}
-    else:
-        # TODO define better return value for frontend
-        return {"status": "Spot is already flagged"}

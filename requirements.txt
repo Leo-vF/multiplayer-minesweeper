@@ -2,3 +2,4 @@ fastapi
 tortoise-orm
 numpy
 uvicorn
+Jinja2Templates

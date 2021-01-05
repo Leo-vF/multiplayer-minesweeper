@@ -66,7 +66,7 @@ async def ws_create(websocket: WebSocket):
             await db_minesweeper.create(**data)
             ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=int(data["code"])))
             ms = ms.dict()
-            websocket.send_json(ms["id"])
+            await websocket.send_json(ms["id"])
         except Exception as e:
             await websocket.send_text(str(e))
 

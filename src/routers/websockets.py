@@ -59,7 +59,7 @@ async def ws_create(websocket: WebSocket):
         await websocket.send_json({"error": "Number of rows must be at or below 60"})
     elif int(data["n_mines"]) < 1:
         await websocket.send_json({"error": "Number of mines too small"})
-    elif int(data["n_mines"]) >= data["n_rows"]*data["n_cols"]:
+    elif int(data["n_mines"]) >= int(data["n_rows"])*int(data["n_cols"]):
         await websocket.send_json({"error": "Number of mines too big"})
     else:
         try:

@@ -119,7 +119,8 @@ async def set_Flag(code: int, col: int, row: int):
         return {"status": "Spot is already opened"}
     elif spot["flagged"] == True:
         # TODO define better return value for frontend
-        return {"status": "Spot is already flagged"}
+        await db_spot.filter(code=code, col=col, row=row).update(flagged=False)
+        return {"status": "Flag removed successfully"}
     else:
         spots = await spot_pydantic.from_queryset(db_spot.filter(code=code, mine=True, flagged=False))
         spots = [spot.dict() for spot in spots]

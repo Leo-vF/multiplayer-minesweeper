@@ -65,6 +65,8 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
 
         if spot["n_mines"] != 0:
             await update_opened(code=code, col=col, row=row)
+            spot = await spot_pydantic.from_queryset_single(code=code, col=col, row=row)
+            spot = spot.dict()
 
             OPENED.append(spot)
 
@@ -77,6 +79,9 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
 
             if spot["opened"] == False and spot["flagged"] == False:
                 await update_opened(code, col, row)
+                spot = spot_pydantic.from_queryset_single(
+                    code=code, col=col, row=row)
+                spot = spot.dict()
                 OPENED.append(spot)
                 for nb in neighbors:
                     if 0 <= nb[0] < n_rows and 0 <= nb[1] < n_cols:

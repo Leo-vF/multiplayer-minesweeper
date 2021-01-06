@@ -70,10 +70,12 @@ async def ws_open(websocket: WebSocket, code: int):
 
     exists = await db_spot.exists(code=code, col=0, row=0)
     if exists == True:
+        ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
+        ms = ms.dict()
         field = await spot_pydantic.from_queryset(db_spot.filter(code=code))
 
         field = [spot.dict() for spot in field]
-        await websocket.send_json({"field": field})
+        await websocket.send_json({"field": field, "n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
 
     else:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
@@ -104,7 +106,6 @@ async def ws_open(websocket: WebSocket, code: int):
                     for spot in ravel(ms.field):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
 
-                # TODO change datatype of json fields
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 ({"opened": opened})
                 await manager.broadcast({"opened": opened})

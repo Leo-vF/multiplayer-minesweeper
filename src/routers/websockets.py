@@ -1,11 +1,12 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-
+from numpy import ravel
 from typing import Dict
 
 from ..models.db import db_minesweeper, minesweeper_pydantic, db_spot, spot_pydantic
 from ..models.socketManager import WebsocketManager
 from .field import open, set_Flag
+from ..minesweeper import Minesweeper
 
 router = APIRouter(prefix="/ws", tags=["Websocket"])
 
@@ -64,26 +65,52 @@ async def ws_open(websocket: WebSocket, code: int):
     await managers[str(code)].connect(websocket)
     manager: WebsocketManager = managers[str(code)]
 
-    try:
+    exists = await db_spot.exists(code=code)
+    if exists != True:
         field = await spot_pydantic.from_queryset(db_spot.get(code=code))
 
         field = [spot.dict() for spot in field]
         await websocket.send_json({"field": field})
-    except:
+
+    else:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
         ms = ms.dict()
         await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
+
     try:
         while True:
             data = await websocket.receive_json()
 
             if data["intent"] == "open":
+                data["col"] = int(data["col"])
+                data["row"] = int(data["row"])
+
+                exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])
+                if exists != True:
+                    ms_dict = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
+                    ms_dict = ms_dict.dict()
+                    ms = Minesweeper(
+                        ms_dict["n_cols"],
+                        ms_dict["n_rows"],
+                        data["col"],
+                        data["row"]
+                    )
+                    ms.place_mines(ms_dict["n_mines"])
+                    default_values = {"opened": False,
+                                      "code": ms_dict["code"], "flagged": False}
+                    for spot in ravel(ms.field):
+                        db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
+
                 # TODO change datatype of json fields
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 ({"opened": opened})
                 await manager.broadcast({"opened": opened})
 
             elif data["intent"] == "flag":
+                exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])
+                if exists != True:
+                    await websocket.send_json({"error": "Can't set a flag on the first Move"})
+                    continue
                 # TODO change datatype of json fields
                 status = set_Flag(code, int(data["col"]), int(data["row"]))
                 # TODO change json depening on status

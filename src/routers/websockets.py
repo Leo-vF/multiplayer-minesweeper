@@ -116,12 +116,17 @@ async def ws_open(websocket: WebSocket, code: int):
 
             elif data["intent"] == "flag":
                 exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])
+
                 if exists != True:
                     await websocket.send_json({"error": "Can't set a flag on the first Move"})
                     continue
-                # TODO change datatype of json fields
+
                 status = await set_Flag(code, int(data["col"]), int(data["row"]))
-                # TODO change json depening on status
+
+                if "status" in status.keys():
+                    if status["status"] == "You Won!":
+                        await db_spot.filter(code=code).delete()
+                        await db_minesweeper.filter(code=code).delete()
                 await manager.broadcast({"flagged": status})
 
     except WebSocketDisconnect:

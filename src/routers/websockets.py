@@ -66,7 +66,7 @@ async def ws_open(websocket: WebSocket, code: int):
     manager: WebsocketManager = managers[str(code)]
 
     exists = await db_spot.exists(code=code)
-    if exists != True:
+    if exists == True:
         field = await spot_pydantic.from_queryset(db_spot.get(code=code))
 
         field = [spot.dict() for spot in field]

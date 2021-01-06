@@ -49,6 +49,10 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
 
     async def update_opened(code: int, col: int, row: int):
         await db_spot.filter(code=code, col=col, row=row).update(opened=True)
+        spot = await spot_pydantic.from_queryset_single(db_spot.get(
+            code=code, col=col, row=row))
+        spot = spot.dict()
+        return spot
 
     async def open_zeros(spot: dict, code: int, size: tuple):
         """Recursive function that open's all the zero's neighbors and their neighbors if they are zero.
@@ -64,9 +68,7 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
         n_cols, n_rows = size
 
         if spot["n_mines"] != 0:
-            await update_opened(code=code, col=col, row=row)
-            spot = await spot_pydantic.from_queryset_single(code=code, col=col, row=row)
-            spot = spot.dict()
+            spot = await update_opened(code=code, col=col, row=row)
 
             OPENED.append(spot)
 
@@ -78,10 +80,8 @@ async def open(code: int, col: int, row: int, double_click: bool = False):
             ]
 
             if spot["opened"] == False and spot["flagged"] == False:
-                await update_opened(code, col, row)
-                spot = spot_pydantic.from_queryset_single(
-                    code=code, col=col, row=row)
-                spot = spot.dict()
+                spot = await update_opened(code, col, row)
+
                 OPENED.append(spot)
                 for nb in neighbors:
                     if 0 <= nb[0] < n_rows and 0 <= nb[1] < n_cols:

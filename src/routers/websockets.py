@@ -68,11 +68,11 @@ async def ws_open(websocket: WebSocket, code: int):
         field = await spot_pydantic.from_queryset(db_spot.get(code=code))
 
         field = [spot.dict() for spot in field]
-        websocket.send_json({"field": field})
+        await websocket.send_json({"field": field})
     except:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
         ms = ms.dict()
-        websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
+        await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
     try:
         while True:
             data = await websocket.receive_json()
@@ -81,13 +81,13 @@ async def ws_open(websocket: WebSocket, code: int):
                 # TODO change datatype of json fields
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 ({"opened": opened})
-                manager.broadcast({"opened": opened})
+                await manager.broadcast({"opened": opened})
 
             elif data["intent"] == "flag":
                 # TODO change datatype of json fields
                 status = set_Flag(code, int(data["col"]), int(data["row"]))
                 # TODO change json depening on status
-                manager.broadcast({"flagged": status})
+                await manager.broadcast({"flagged": status})
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

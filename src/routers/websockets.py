@@ -71,6 +71,7 @@ async def ws_open(websocket: WebSocket, code: int):
         websocket.send_json({"field": field})
     except:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
+        ms = ms.dict()
         websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
     try:
         while True:

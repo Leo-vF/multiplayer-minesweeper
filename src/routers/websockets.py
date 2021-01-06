@@ -62,7 +62,7 @@ async def ws_open(websocket: WebSocket, code: int):
         code (int): The Code that uniquely identifies a single game
     """
 
-    if str(code) not in managers.keys:
+    if str(code) not in managers.keys():
         managers.update({str("code"): WebsocketManager()})
     await managers[str(code)].connect(websocket)
 

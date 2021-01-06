@@ -64,10 +64,14 @@ async def ws_open(websocket: WebSocket, code: int):
     await managers[str(code)].connect(websocket)
     manager: WebsocketManager = managers[str(code)]
 
-    field = await spot_pydantic.from_queryset(db_spot.get(code=code))
+    try:
+        field = await spot_pydantic.from_queryset(db_spot.get(code=code))
 
-    field = [spot.dict() for spot in field]
-    websocket.send_json({"field": field})
+        field = [spot.dict() for spot in field]
+        websocket.send_json({"field": field})
+    except:
+        ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
+        websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
     try:
         while True:
             data = await websocket.receive_json()

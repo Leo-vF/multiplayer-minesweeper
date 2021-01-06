@@ -107,8 +107,12 @@ async def ws_open(websocket: WebSocket, code: int):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
-                ({"opened": opened})
-                await manager.broadcast({"opened": opened})
+                if type(opened) == "List":
+                    await manager.broadcast({"opened": opened})
+                else:
+                    await manager.broadcast({"opened": opened})
+                    await db_spot.delete(code=code)
+                    await db_minesweeper.delete(code=code)
 
             elif data["intent"] == "flag":
                 exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])
@@ -116,7 +120,7 @@ async def ws_open(websocket: WebSocket, code: int):
                     await websocket.send_json({"error": "Can't set a flag on the first Move"})
                     continue
                 # TODO change datatype of json fields
-                status = set_Flag(code, int(data["col"]), int(data["row"]))
+                status = await set_Flag(code, int(data["col"]), int(data["row"]))
                 # TODO change json depening on status
                 await manager.broadcast({"flagged": status})
 

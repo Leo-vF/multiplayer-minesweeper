@@ -15,4 +15,4 @@ class WebsocketManager:
 
     async def broadcast(self, message: dict):
         for socket in self.active_connections:
-            socket.send_json(message)
+            await socket.send_json(message)

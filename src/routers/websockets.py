@@ -33,9 +33,10 @@ async def ws_create(websocket: WebSocket):
         try:
             await db_minesweeper.create(**data)
             ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=int(data["code"])))
-            managers.update({str(data["code"]): WebsocketManager()})
             ms = ms.dict()
-            # await websocket.send_json(str(ms["id"]))
+
+            managers.update({str(data["code"]): WebsocketManager()})
+
             await websocket.send_json({"succes": "Game succesfully created"})
         except Exception as e:
             await websocket.send_text(str(e))
@@ -72,13 +73,13 @@ async def ws_open(websocket: WebSocket, code: int):
 
             if data["intent"] == "open":
                 # TODO change datatype of json fields
-                opened = await open(code, data["col"], data["row"])
+                opened = await open(code, int(data["col"]), int(data["row"]))
                 ({"opened": opened})
                 manager.broadcast({"opened": opened})
 
             elif data["intent"] == "flag":
                 # TODO change datatype of json fields
-                status = set_Flag(code, data["col"], data["row"])
+                status = set_Flag(code, int(data["col"]), int(data["row"]))
                 # TODO change json depening on status
                 manager.broadcast({"flagged": status})
 

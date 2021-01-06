@@ -107,12 +107,12 @@ async def ws_open(websocket: WebSocket, code: int):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
-                if type(opened) == "List":
+                if type(opened) == list:
                     await manager.broadcast({"opened": opened})
                 else:
                     await manager.broadcast({"opened": opened})
-                    await db_spot.delete(code=code)
-                    await db_minesweeper.delete(code=code)
+                    await db_spot.filter(code=code).delete()
+                    await db_minesweeper.filter(code=code).delete()
 
             elif data["intent"] == "flag":
                 exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])

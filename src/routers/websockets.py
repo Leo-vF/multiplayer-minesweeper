@@ -62,12 +62,15 @@ async def ws_open(websocket: WebSocket, code: int):
         code (int): The Code that uniquely identifies a single game
     """
 
+    if str(code) not in managers.keys:
+        managers.update({str("code"): WebsocketManager()})
     await managers[str(code)].connect(websocket)
+
     manager: WebsocketManager = managers[str(code)]
 
     exists = await db_spot.exists(code=code, col=0, row=0)
     if exists == True:
-        field = await spot_pydantic.from_queryset(db_spot.get(code=code))
+        field = await spot_pydantic.from_queryset(db_spot.filter(code=code))
 
         field = [spot.dict() for spot in field]
         await websocket.send_json({"field": field})

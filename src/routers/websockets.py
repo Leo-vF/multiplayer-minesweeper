@@ -64,7 +64,8 @@ async def ws_open(websocket: WebSocket, code: int):
     await managers[str(code)].connect(websocket)
     manager: WebsocketManager = managers[str(code)]
 
-    field = await spot_pydantic.from_queryset(db_spot.filter(code))
+    field = await spot_pydantic.from_queryset(db_spot.get(code))
+
     field = [spot.dict() for spot in field]
     websocket.send_json({"field": field})
     try:

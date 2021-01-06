@@ -1,12 +1,15 @@
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
-from ..models.db import db_minesweeper, minesweeper_pydantic
+
+from typing import Dict
+
+from ..models.db import db_minesweeper, minesweeper_pydantic, db_spot, spot_pydantic
+from ..models.socketManager import WebsocketManager
+from .field import open, set_Flag
 
 router = APIRouter(prefix="/ws", tags=["Websocket"])
 
-# @router.get("/")
-# async def get():
-#     return HTMLResponse(html)
+managers: Dict[str, WebsocketManager] = {}
 
 
 @router.websocket("/create")
@@ -30,6 +33,7 @@ async def ws_create(websocket: WebSocket):
         try:
             await db_minesweeper.create(**data)
             ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=int(data["code"])))
+            managers.update({str(data["code"]): WebsocketManager()})
             ms = ms.dict()
             # await websocket.send_json(str(ms["id"]))
             await websocket.send_json({"succes": "Game succesfully created"})
@@ -45,3 +49,39 @@ async def ws_join(websocket: WebSocket):
         db_minesweeper.filter(code=data["code"])
     except Exception as e:
         await websocket.send_text(str(e))
+
+
+@router.websocket("/game/{code}")
+async def ws_open(websocket: WebSocket, code: int):
+    """The Websocket that is used for the entire game, to allow broadcasting one players actions to the other participants.
+
+    Args:
+        websocket (WebSocket): The Websocket used for the connection
+        code (int): The Code that uniquely identifies a single game
+    """
+
+    await managers[str(code)].connect(websocket)
+    manager: WebsocketManager = managers[str(code)]
+
+    field = await spot_pydantic.from_queryset(db_spot.filter(code))
+    field = [spot.dict() for spot in field]
+    websocket.send_json({"field": field})
+    try:
+        while True:
+            data = await websocket.receive_json()
+
+            if data["intent"] == "open":
+                # TODO change datatype of json fields
+                opened = await open(code, data["col"], data["row"])
+                ({"opened": opened})
+                manager.broadcast({"opened": opened})
+
+            elif data["intent"] == "flag":
+                # TODO change datatype of json fields
+                status = set_Flag(code, data["col"], data["row"])
+                # TODO change json depening on status
+                manager.broadcast({"flagged": status})
+
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        # TODO send message to other clients that sb disconnected

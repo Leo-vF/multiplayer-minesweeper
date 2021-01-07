@@ -120,7 +120,7 @@ async def ws_open(websocket: WebSocket, code: int):
                     await db_minesweeper.filter(code=code).delete()
 
             elif data["intent"] == "flag":
-                exists = await db_spot.exists(code=code, col=data["col"], row=data["row"])
+                exists = await db_spot.exists(code=code, col=int(data["col"]), row=int(data["row"]))
 
                 if exists != True:
                     await websocket.send_json({"error": "Can't set a flag on the first Move"})

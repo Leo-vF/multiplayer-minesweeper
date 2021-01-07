@@ -63,7 +63,7 @@ async def ws_open(websocket: WebSocket, code: int):
     """
 
     if str(code) not in managers.keys():
-        managers.update({str("code"): WebsocketManager()})
+        managers.update({str(code): WebsocketManager()})
     await managers[str(code)].connect(websocket)
 
     manager: WebsocketManager = managers[str(code)]

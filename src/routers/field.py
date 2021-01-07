@@ -131,6 +131,9 @@ async def set_Flag(code: int, col: int, row: int):
         await db_spot.filter(code=code, col=col, row=row).update(flagged=True)
         if len(spots) == 1:
             if spots[0]["col"] == spot["col"] and spots[0]["row"] == spot["row"]:
-                # TODO define better return value for frontend
+                flag_no_mine_spots = await db_spot.exists(code=code, mine=False, flagged=True)
+                #  test to see if there are flags where no mine is
+                if flag_no_mine_spots:
+                    return {}
                 return {"status": "You won!"}
         return {"success": True, "col": spot["col"], "row": spot["row"]}

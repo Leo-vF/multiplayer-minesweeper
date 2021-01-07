@@ -68,8 +68,10 @@ async def ws_open(websocket: WebSocket, code: int):
 
     manager: WebsocketManager = managers[str(code)]
 
-    exists = await db_spot.exists(code=code, col=0, row=0)
-    if exists == True:
+    field_exists = await db_minesweeper.exists(code=code)
+    spot_exists = await db_spot.exists(code=code, col=0, row=0)
+
+    if spot_exists == True:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
         ms = ms.dict()
         field = await spot_pydantic.from_queryset(db_spot.filter(code=code))
@@ -77,10 +79,13 @@ async def ws_open(websocket: WebSocket, code: int):
         field = [spot.dict() for spot in field]
         await websocket.send_json({"field": field, "n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
 
-    else:
+    elif field_exists == True:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
         ms = ms.dict()
         await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
+    else:
+        websocket.send_json({"error": "The Game you requested does not exist"})
+        return None
 
     try:
         while True:

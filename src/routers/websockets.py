@@ -84,7 +84,7 @@ async def ws_open(websocket: WebSocket, code: int):
         ms = ms.dict()
         await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
     else:
-        websocket.send_json({"error": "The Game you requested does not exist"})
+        await websocket.send_json({"error": "The Game you requested does not exist"})
         return None
 
     try:

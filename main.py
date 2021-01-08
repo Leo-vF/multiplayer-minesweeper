@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.templating import Jinja2Templates
 
-from .routers import field, general, websockets
+from .src.routers import field, general, websockets
 
 app = FastAPI()
 app.include_router(general.router)

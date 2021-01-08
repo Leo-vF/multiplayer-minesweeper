@@ -1,0 +1,1 @@
+{"id":"ca9b6b0a-86fe-4446-988c-230e40dc0a8a","space":2168,"runtime":"python3.7","name":"multiplayer-minesweeper","path":"kvyuro","project":"a0ssw1ni","account":"144798365827","region":"eu-central-1","deps":["fastapi","tortoise-orm","numpy","uvicorn","Jinja2","websockets"],"envs":null,"public":true,"log_level":"debug","cron":"","reload_deps":false}

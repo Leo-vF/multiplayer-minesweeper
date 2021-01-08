@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.templating import Jinja2Templates
+import uvicorn
 
 from src.routers import field, general, websockets
 

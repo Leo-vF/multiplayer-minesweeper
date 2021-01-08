@@ -48,7 +48,8 @@ async def ws_join(websocket: WebSocket):
     await websocket.accept()
     data = await websocket.receive_json()
     try:
-        db_minesweeper.filter(code=data["code"])
+        field_exists = await db_minesweeper.exists(code=data["code"])
+        await websocket.send_json({"exists": field_exists})
     except Exception as e:
         await websocket.send_text(str(e))
 

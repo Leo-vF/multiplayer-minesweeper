@@ -3,3 +3,4 @@ tortoise-orm
 numpy
 uvicorn
 Jinja2
+websockets

@@ -111,6 +111,7 @@ async def ws_open(websocket: WebSocket, code: int):
                                       "code": ms_dict["code"], "flagged": False}
                     for spot in ravel(ms.field):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
+                    await manager.broadcast({"solvable": ms_dict["solvable"]})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 if type(opened) == list:

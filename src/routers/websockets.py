@@ -78,12 +78,12 @@ async def ws_open(websocket: WebSocket, code: int):
         field = await spot_pydantic.from_queryset(db_spot.filter(code=code))
 
         field = [spot.dict() for spot in field]
-        await websocket.send_json({"field": field, "n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
+        await websocket.send_json({"field": field, "n_cols": ms["n_cols"], "n_rows": ms["n_rows"], "n_mines": ms["n_mines"]})
 
     elif field_exists == True:
         ms = await minesweeper_pydantic.from_queryset_single(db_minesweeper.get(code=code))
         ms = ms.dict()
-        await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"]})
+        await websocket.send_json({"n_cols": ms["n_cols"], "n_rows": ms["n_rows"], "n_mines": ms["n_mines"]})
     else:
         await websocket.send_json({"error": "The Game you requested does not exist"})
         return None
@@ -111,7 +111,6 @@ async def ws_open(websocket: WebSocket, code: int):
                                       "code": ms_dict["code"], "flagged": False}
                     for spot in ravel(ms.field):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
-                    manager.broadcast({"n_mines": ms_dict["n_mines"]})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 if type(opened) == list:

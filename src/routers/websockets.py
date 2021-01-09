@@ -18,17 +18,17 @@ async def ws_create(websocket: WebSocket):
     await websocket.accept()
     data = await websocket.receive_json()
 
-    if int(data["n_cols"]) <= 3:
+    if int(data["n_cols"]) <= 5:
         await websocket.send_json({"error": "Number of colums is too small"})
     elif int(data["n_cols"]) > 60:
         await websocket.send_json({"error": "Number of columns must be at or below 60"})
-    elif int(data["n_rows"]) <= 3:
+    elif int(data["n_rows"]) <= 5:
         await websocket.send_json({"error": "Number of rows is too small"})
     elif int(data["n_rows"]) > 60:
         await websocket.send_json({"error": "Number of rows must be at or below 60"})
     elif int(data["n_mines"]) < 1:
         await websocket.send_json({"error": "Number of mines too small"})
-    elif int(data["n_mines"]) >= int(data["n_rows"])*int(data["n_cols"]):
+    elif int(data["n_mines"]) >= int(data["n_rows"])*int(data["n_cols"]) - 9:
         await websocket.send_json({"error": "Number of mines too big"})
     else:
         try:
@@ -111,7 +111,6 @@ async def ws_open(websocket: WebSocket, code: int):
                                       "code": ms_dict["code"], "flagged": False}
                     for spot in ravel(ms.field):
                         db_sp_obj = await db_spot.create(**{**spot.get_db_attribs(), **default_values})
-                    await manager.broadcast({"solvable": ms_dict["solvable"]})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 if type(opened) == list:

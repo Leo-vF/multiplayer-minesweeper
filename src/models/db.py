@@ -51,5 +51,7 @@ minesweeper_pydantic = pydantic_model_creator(
     db_minesweeper, name="minesweeper_pydantic")
 minesweeperIn_pydantic = pydantic_model_creator(
     db_minesweeper, name="minesweeperIn_pydantic", exclude_readonly=True, exclude=("id"))
+msInWs_pydantic = pydantic_model_creator(
+    db_minesweeper, name="msInWs_pydantic", exclude=("id", "code"))
 spot_pydantic = pydantic_model_creator(
     db_spot, exclude_readonly=True, name="spot_pydantic")

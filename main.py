@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from src.routers import field, general, websockets
@@ -11,6 +12,12 @@ app.include_router(field.router)
 app.include_router(websockets.router)
 
 templates = Jinja2Templates(directory="src/templates")
+
+origins = ["https://multi-minesweeper-9a0a1.web.app",
+           "http://multi-minesweeper-9a0a1.web.app", "http://localhost:3000"]
+
+app.add_middleware(CORSMiddleware, allow_origins=origins,
+                   allow_methods=["*"], allow_headers=["*"])
 
 
 @app.get("/")

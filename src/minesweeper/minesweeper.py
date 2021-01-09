@@ -12,7 +12,7 @@ class Minesweeper:
         self.n_cols = n_cols
         self.n_rows = n_rows
         self.n_spots = n_cols * n_rows
-        self.start_pos = self.field[start_col][start_row]
+        self.start_pos = (start_col, start_row)
 
     def __str__(self) -> str:
         _str = "["
@@ -27,16 +27,51 @@ class Minesweeper:
     def place_mines(self, mines_to_place=None):
         """Makes a consistent minesweeper field that you can't lose in, on the first try. 1 of 6 spots in the field are mines.
         """
+
+        def cut_three_by_three(field, col, row):
+            """Cuts a three by three field out of self.field around the center coordinates col and row.
+
+            Args:
+                col (int): The index of the col of the center spot of which to cut around
+                row (int): The index of the row of the center spot of which to cut around
+
+            Returns:
+                List[List]: The list of lists with the 3 by three cutout.
+            """
+            sliced = []
+            sliced += field[:col-1]
+            sliced += [field[col-1][:row-1] + field[col-1][row+2:]]
+            sliced += [field[col][:row-1] + field[col][row+2:]]
+            sliced += [field[col+1][:row-1] + field[col+1][row+2:]]
+            sliced += field[col+2:]
+            return sliced
+
+        def flatten(field):
+            """Converts a 2d array to a 1d array
+
+            Args:
+                field (List[List]): The 2d array that will be converted to a 1d array
+
+            Returns:
+                List: The 1d array made from the sub-lists of the 2d array
+            """
+            flat = []
+            for col in field:
+                flat += col
+            return flat
+
         if mines_to_place in [None, 0, self.n_spots]:
             mines_to_place = round(self.n_spots/6)
         self.n_mines = mines_to_place
 
         mine_spots = choice(ravel(self.field), mines_to_place, replace=False)
 
-        # ensures that you can't lose on the first click
-        while self.start_pos in mine_spots:
-            mine_spots = choice(ravel(self.field),
-                                mines_to_place, replace=False)
+        # cuts out the start spot and all neighboring squares to ensure that there is no mine there, which in turn
+        # ensures the start spot to be a 0 to make a start possible.
+        field_for_mines = cut_three_by_three(self.field, *self.start_pos)
+
+        mine_spots = choice(flatten(field_for_mines),
+                            mines_to_place, replace=False)
 
         for mine in mine_spots:
             col, row = mine.get_col_row()
@@ -53,12 +88,6 @@ class Minesweeper:
 
                     self.field[n[0]][n[1]].n_mines += 1
                     self.field[n[0]][n[1]].orig_n_mines += 1
-
-        # ensures that the field is solvable after the first click
-        # meaning that the first field has to have 0 neighboring mines
-        if self.start_pos.orig_n_mines != 0 or self.start_pos.mine == True:
-            self.reset_field()
-            self.place_mines(mines_to_place)
 
     def reset_field(self):
         """Resets every Spot's number of mines and whether or not it is a mine
@@ -85,8 +114,9 @@ class Minesweeper:
 
 
 if __name__ == "__main__":
-    ms = Minesweeper(2, 5, 1, 1)
+    ms = Minesweeper(5, 5, 1, 1)
     ms.place_mines()
+    print(ms)
     for row in ms.field:
         for spot in row:
             print(spot.mine)

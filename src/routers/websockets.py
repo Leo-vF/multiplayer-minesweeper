@@ -12,17 +12,6 @@ router = APIRouter(prefix="/ws", tags=["Websocket"])
 managers: Dict[str, WebsocketManager] = {}
 
 
-@router.websocket("/join")
-async def ws_join(websocket: WebSocket):
-    await websocket.accept()
-    data = await websocket.receive_json()
-    try:
-        field_exists = await db_minesweeper.exists(code=data["code"])
-        await websocket.send_json({"exists": field_exists})
-    except Exception as e:
-        await websocket.send_text(str(e))
-
-
 @router.websocket("/game/{code}")
 async def ws_open(websocket: WebSocket, code: int):
     """The Websocket that is used for the entire game, to allow broadcasting one players actions to the other participants.

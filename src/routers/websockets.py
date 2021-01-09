@@ -83,7 +83,7 @@ async def ws_open(websocket: WebSocket, code: int):
 
                     field = await spot_pydantic.from_queryset(db_spot.filter(code=code))
                     field = [spot.dict() for spot in field]
-                    manager.broadcast({"field": field})
+                    await manager.broadcast({"field": field})
 
                 opened = await open(code, int(data["col"]), int(data["row"]))
                 if type(opened) == list:

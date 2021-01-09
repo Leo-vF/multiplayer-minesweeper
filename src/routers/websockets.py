@@ -107,7 +107,13 @@ async def ws_open(websocket: WebSocket, code: int):
                         await db_spot.filter(code=code).delete()
                         await db_minesweeper.filter(code=code).delete()
                 await manager.broadcast({"flagged": status})
-
+            elif data["intent"] == "restart":
+                await db_minesweeper.create(code=code,
+                                            n_cols=data["n_cols"],
+                                            n_rows=data["n_rows"],
+                                            solvable=False,
+                                            n_mines=["n_mines"]
+                                            )
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         # TODO send message to other clients that sb disconnected

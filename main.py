@@ -14,7 +14,8 @@ app.include_router(websockets.router)
 templates = Jinja2Templates(directory="src/templates")
 
 origins = ["https://multi-minesweeper-9a0a1.web.app",
-           "http://multi-minesweeper-9a0a1.web.app", "http://localhost:3000"]
+           "http://multi-minesweeper-9a0a1.web.app",
+           "http://localhost:3000"]
 
 app.add_middleware(CORSMiddleware, allow_origins=origins,
                    allow_methods=["*"], allow_headers=["*"])

@@ -1,12 +1,13 @@
 from fastapi import APIRouter
 
-from ..models.db import minesweeperIn_pydantic, minesweeper_pydantic, db_minesweeper
+from ..models.db import minesweeperIn_pydantic, db_minesweeper
+from ..models.pydantic_models import join_pyd
 
 router = APIRouter(prefix="", tags=["General Options"])
 
 
 @router.post("/join")
-async def join_page(code: int):
+async def join_page(code: join_pyd):
     field_exists = await db_minesweeper.exists(code=code)
     return {"exists": field_exists}
 

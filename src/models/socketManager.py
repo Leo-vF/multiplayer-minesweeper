@@ -15,4 +15,7 @@ class WebsocketManager:
 
     async def broadcast(self, message: dict):
         for socket in self.active_connections:
-            await socket.send_json(message)
+            try:
+                await socket.send_json(message)
+            except Exception as e:
+                print(e)

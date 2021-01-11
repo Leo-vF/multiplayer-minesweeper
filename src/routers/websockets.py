@@ -101,7 +101,7 @@ async def ws_open(websocket: WebSocket, code: int):
                                             n_cols=data["n_cols"],
                                             n_rows=data["n_rows"],
                                             solvable=False,
-                                            n_mines=["n_mines"]
+                                            n_mines=data["n_mines"]
                                             )
     except WebSocketDisconnect:
         manager.disconnect(websocket)

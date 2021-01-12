@@ -81,7 +81,8 @@ async def ws_open(websocket: WebSocket, code: int):
                 else:
                     if "game_status" in opened.keys():
                         await manager.broadcast({"opened": opened, "message": f"{NAME} threw the game"})
-                    await manager.broadcast({"opened": opened})
+                    else:
+                        await manager.broadcast({"opened": opened})
                     await db_spot.filter(code=code).delete()
                     await db_minesweeper.filter(code=code).delete()
 

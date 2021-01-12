@@ -7,9 +7,9 @@ router = APIRouter(prefix="", tags=["General Options"])
 
 
 @router.post("/join")
-async def join_page(join: join_pyd):
-    join = join.dict()
-    field_exists = await db_minesweeper.exists(code=join["code"])
+async def join_page(code: join_pyd):
+    code = code.dict()
+    field_exists = await db_minesweeper.exists(code=code)
     return {"exists": field_exists}
 
 

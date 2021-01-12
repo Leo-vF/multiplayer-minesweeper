@@ -20,6 +20,7 @@ async def ws_open(websocket: WebSocket, code: int):
         websocket (WebSocket): The Websocket used for the connection
         code (int): The Code that uniquely identifies a single game
     """
+    NAME: str = ""
 
     if str(code) not in managers.keys():
         managers.update({str(code): WebsocketManager()})
@@ -78,6 +79,8 @@ async def ws_open(websocket: WebSocket, code: int):
                 if type(opened) == list:
                     await manager.broadcast({"opened": opened})
                 else:
+                    if "game_status" in opened.keys():
+                        await manager.broadcast({"opened": opened, "message": f"{NAME} threw the game"})
                     await manager.broadcast({"opened": opened})
                     await db_spot.filter(code=code).delete()
                     await db_minesweeper.filter(code=code).delete()
@@ -91,10 +94,6 @@ async def ws_open(websocket: WebSocket, code: int):
 
                 status = await set_Flag(code, int(data["col"]), int(data["row"]))
 
-                if "status" in status.keys():
-                    if status["status"] == "You Won!":
-                        await db_spot.filter(code=code).delete()
-                        await db_minesweeper.filter(code=code).delete()
                 await manager.broadcast({"flagged": status})
             elif data["intent"] == "restart":
                 await db_minesweeper.create(code=code,
@@ -103,6 +102,8 @@ async def ws_open(websocket: WebSocket, code: int):
                                             solvable=False,
                                             n_mines=data["n_mines"]
                                             )
+            elif data["intent"] == "name":
+                NAME = data["name"]
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         # TODO send message to other clients that sb disconnected

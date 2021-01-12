@@ -7,7 +7,7 @@ router = APIRouter(prefix="", tags=["General Options"])
 
 
 @router.post("/join")
-async def join_page(code: join_pyd):
+async def join_page(data: join_pyd):
     """The join backend route to check whether or not the game identified by the code the user enters exists
 
     Args:
@@ -16,8 +16,8 @@ async def join_page(code: join_pyd):
     Returns:
         dict[str, bool]: "exists": bool whether or not the game exists
     """
-    code = code.dict()
-    field_exists = await db_minesweeper.exists(code=code)
+    data = data.dict()
+    field_exists = await db_minesweeper.exists(code=data["code"])
     return {"exists": field_exists}
 
 

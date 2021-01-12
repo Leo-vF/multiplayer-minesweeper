@@ -23,6 +23,14 @@ async def join_page(code: join_pyd):
 
 @router.post("/create")
 async def create_new_game(msIn: minesweeperIn_pydantic):
+    """The create backend route to make a new game
+
+    Args:
+        msIn (minesweeperIn_pydantic): Pydantic model for the required data to create a new game.
+
+    Returns:
+        dict[str, str]: either error with specific information or succes with "Game successfully created"
+    """
     msIn = msIn.dict()
 
     if msIn["n_cols"] <= 5:
